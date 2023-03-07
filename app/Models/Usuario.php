@@ -62,6 +62,10 @@ class Usuario extends DBAbstractModel{
         return $this->mensaje;
     }
 
+    public function getRows(){
+        return $this->rows;
+    }
+
     public function get(){
         // if($this->id != ''){
         //     $this->query = "SELECT * FROM usuarios WHERE id = :id";
@@ -101,6 +105,35 @@ class Usuario extends DBAbstractModel{
     public function getUserByIdColaborador($idUsuario = ''){
         // select usuatios where id is idUsuario
         $this->query = "SELECT nombre FROM usuarios WHERE id = :id";
+        $this->parametros['id'] = $idUsuario;
+        $this->get_results_from_query();
+        return $this->rows;
+    }
+
+    // exist method with user and pass
+    public function exists(){
+        $this->query = "SELECT * FROM usuarios WHERE usuario = :user AND password = :passwd";
+        $this->parametros['user'] = $this->user;
+        $this->parametros['passwd'] = $this->passwd;
+        $this->get_results_from_query();
+        if(count($this->rows) == 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    // SELECT Perfiles_perfil from r_usuarios_perfiles where usuarios_id = 1 getPerfilByIdUser()
+    public function getPerfilByIdUser($idUsuario = ''){
+        $this->query = "SELECT Perfiles_perfil FROM r_usuarios_perfiles WHERE usuarios_id = :id";
+        $this->parametros['id'] = $idUsuario;
+        $this->get_results_from_query();
+        return $this->rows;
+    }
+    
+    // isActivoByIdUser
+    public function isActivoByIdUser($idUsuario = ''){
+        $this->query = "SELECT estado FROM usuarios WHERE id = :id";
         $this->parametros['id'] = $idUsuario;
         $this->get_results_from_query();
         return $this->rows;

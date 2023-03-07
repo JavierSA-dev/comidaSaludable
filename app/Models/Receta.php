@@ -142,6 +142,13 @@ class Receta extends DBAbstractModel{
         return $this->rows;
     }
 
+    public function searchByTitulo($titulo){
+        $this->query = "SELECT * FROM recetas WHERE titulo LIKE :titulo";
+        $this->parametros['titulo'] = "%$titulo%";
+        $this->get_results_from_query();
+        return $this->rows;
+    }
+
     // public function setId($id){
     //     $this->id = $id;
     // }

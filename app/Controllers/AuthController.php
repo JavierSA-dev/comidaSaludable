@@ -11,18 +11,25 @@ class AuthController extends BaseController
         if ($user->exists()) {
             $_SESSION['user'] = $user->getUser();
             $_SESSION['name'] = $user->getNombre();
-            $_SESSION['auth'] = 'admin';
-            header('Location: http://cocinasaludable.localhost/');
+            $_SESSION['id'] = $user->getRows()[0]['id'];
+            $_SESSION['estado'] = $user->isActivoByIdUser($_SESSION['id'])[0]['estado'];
+            if ($_SESSION['estado'] == 'Bloqueado') {
+                $_SESSION['error'] = 'Usuario bloqueado';
+                header('Location: http://comidasaludable.localhost/');
+            }else{
+                $_SESSION['auth'] = $user->getPerfilByIdUser($_SESSION['id'])[0]['Perfiles_perfil'];
+                header('Location: http://comidasaludable.localhost/');
+            }
         }else{
             $_SESSION['error'] = 'Usuario o contraseña incorrectos';
-            header('Location: http://cocinasaludable.localhost/');
+            header('Location: http://comidasaludable.localhost/');
         }
     }
     public function logoutAction()
     {
         session_start();
         session_destroy();
-        header('Location: http://cocinasaludable.localhost/');
+        header('Location: http://comidasaludable.localhost/');
     }
 
 

@@ -18,6 +18,7 @@ define('DBPORT', $_ENV['DB_PORT']);
 session_start();
 if (!isset($_SESSION['auth'])) {
     $_SESSION['auth'] = 'guest';
+    $_SESSION['id'] = 0;
 }
 
 
@@ -31,7 +32,7 @@ $router->add(array(
 $router->add(array(
     'name' => 'addSuperheroe',
     'path' => '/add\/?$/',
-    'action' => [RecetasController::class, 'addSuperheroeAction']
+    'action' => [RecetasController::class, 'addRecetaAction']
 ));
 
 $router->add(array(
@@ -69,5 +70,3 @@ if ($route) {
 } else {
     echo "No route";
 }
-
-?>

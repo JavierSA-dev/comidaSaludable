@@ -1,2 +1,2 @@
 <h2>Acceso no autorizado</h2>
-<a href="http://superheroes.localhost/">Volver</a>
+<a href="http://comidasaludable.localhost/logout">Volver</a>
