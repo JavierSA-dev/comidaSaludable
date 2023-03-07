@@ -117,7 +117,10 @@ class Receta extends DBAbstractModel{
         $this->mensaje = 'Receta agregada exitosamente';
     }
 
-    public function edit(){
+    public function edit($id = ''){
+        if($id != ''){
+            $this->id = $id;
+        }
         $this->query = "UPDATE recetas SET titulo = :titulo, ingredientes = :ingredientes, elaboracion = :elaboracion, etiquetas = :etiquetas, publica = :publica, imagen = :imagen, idColaborador = :idColaborador WHERE id = :id";
         $this->parametros['titulo'] = $this->titulo;
         $this->parametros['ingredientes'] = $this->ingredientes;
@@ -128,10 +131,13 @@ class Receta extends DBAbstractModel{
         $this->parametros['idColaborador'] = $this->idColaborador;
         $this->parametros['id'] = $this->id;
         $this->get_results_from_query();
-        $this->mensaje = 'Receta editada exitosamente';
+        $this->mensaje = 'Receta modificada exitosamente';
     }
     
-    public function delete(){
+    public function delete($id = ''){
+        if($id != ''){
+            $this->id = $id;
+        }
         $this->query = "DELETE FROM recetas WHERE id = :id";
         $this->parametros['id'] = $this->id;
         $this->get_results_from_query();
@@ -142,9 +148,18 @@ class Receta extends DBAbstractModel{
         return $this->rows;
     }
 
+    // search
     public function searchByTitulo($titulo){
         $this->query = "SELECT * FROM recetas WHERE titulo LIKE :titulo";
         $this->parametros['titulo'] = "%$titulo%";
+        $this->get_results_from_query();
+        return $this->rows;
+    }
+
+    // getById
+    public function getById($id){
+        $this->query = "SELECT * FROM recetas WHERE id = :id";
+        $this->parametros['id'] = $id;
         $this->get_results_from_query();
         return $this->rows;
     }

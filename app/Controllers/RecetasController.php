@@ -82,47 +82,78 @@ class RecetasController extends BaseController
 
     }
 
-    // public function editSuperheroeAction($ruta)
-    // {
-    //     if (!isset($_SESSION['auth']) or $_SESSION['auth'] != 'admin') {
-    //         $this->renderHTML('../views/noAutorizado_view.php');
-    //     }else{
-    //         if (isset($_POST['send'])) {
-    //             $superheroe = Superheroe::getInstancia();
-    //             $superheroe->setId($_POST['id']);
-    //             $superheroe->setNombre($_POST['nombre']);
-    //             $superheroe->setVelocidad($_POST['velocidad']);
-    //             $superheroe->edit();
-    //             header('Location: http://superheroes.localhost/');
-    //         } else {
-    //             $id = explode('/', $ruta)[2];
-    //             $superheroe = Superheroe::getInstancia();
-    //             $superheroe->setId($id);
-    //             $superheroe->get();
-    //             $data = array('superheroe' => $superheroe->getRows());
-    //             if (empty($data['superheroe'])) {
-    //                 $_SESSION['error'] = 'No existe el superheroe';
-    //                 header('Location: http://superheroes.localhost/');
-    //             }else{
-    //                 $this->renderHTML('../views/editSuperheroe_view.php', $data);
-    //             }
-    //         }
-    //     }
+    public function editRecetaAction($ruta)
+    {
+        $usuario = Usuario::getInstancia();
+        if (!isset($_SESSION['auth']) or $_SESSION['auth'] != 'Collaborator' or $usuario->isActivoByIdUser($_SESSION['id'])[0]['estado'] == 'Bloqueado') {
+            $_SESSION['estado'] = "Bloqueado";
+            $this->renderHTML('../views/noAutorizado_view.php');
+        }else{
+            $id = explode('/', $ruta)[2];
+            $receta = Receta::getInstancia();
+            $receta->getById($id);
+            $data = array('receta' => $receta->getRows()[0]);
+            if (isset($_POST['send'])) {
+                $target_dir = "uploads/";
+                if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
+                    $target_file = $target_dir . basename($_FILES["imagen"]["name"]);
+                    $uploadOk = 1;
+                    $check = getimagesize($_FILES["imagen"]["tmp_name"]);
+                    if($check !== false) {
+                        echo "File is an image - " . $check["mime"] . ".";
+                        $uploadOk = 1;
+                    } else {
+                        echo "File is not an image.";
+                        $uploadOk = 0;
+                    }
+                    if ($uploadOk == 0) {
+                        echo "Sorry, your file was not uploaded.";
+                    } else {
+                        if (move_uploaded_file($_FILES["imagen"]["tmp_name"], $target_file)) {
+                            echo "The file ". basename( $_FILES["imagen"]["name"]). " has been uploaded.";
+                        } else {
+                            echo "Sorry, there was an error uploading your file.";
+                        }
+                    }
+                    $receta->setImagen($_FILES['imagen']['name']);
+                }else{
+                    $receta->getById($id);
+                    $data = array('receta' => $receta->getRows()[0]);
+                    $receta->setImagen($data['receta']['imagen']);
+                }
 
-    // }
+                $receta->setTitulo($_POST['titulo']);
+                $receta->setIngredientes($_POST['ingredientes']);
+                $receta->setElaboracion($_POST['elaboracion']);
+                $receta->setEtiquetas($_POST['etiquetas']);
+                if (isset($_POST['publica'])) {
+                    $receta->setPublica(1);
+                }else{
+                    $receta->setPublica(0);
+                }
+                $receta->setIdColaborador($_SESSION['id']);
+                $receta->edit($id);
+                header('Location: http://comidasaludable.localhost/');
+            } else {
+                $this->renderHTML('../views/editReceta_view.php', $data);
+            }
+        }
 
-    // public function deleteSuperheroeAction($ruta)
-    // {
-    //     if (!isset($_SESSION['auth']) or $_SESSION['auth'] != 'admin') {
-    //         $this->renderHTML('../views/noAutorizado_view.php');
-    //     }else{
-    //         $id = explode('/', $ruta)[2];
-    //         $superheroe = Superheroe::getInstancia();
-    //         $superheroe->delete($id);
-    //         header('Location: http://superheroes.localhost/');
-    //     }
 
-    // }
+    }
+
+    public function deleteRecetaAction($ruta){
+        $usuario = Usuario::getInstancia();
+        if (!isset($_SESSION['auth']) or $_SESSION['auth'] != 'Collaborator' or $usuario->isActivoByIdUser($_SESSION['id'])[0]['estado'] == 'Bloqueado') {
+            $_SESSION['estado'] = "Bloqueado";
+            $this->renderHTML('../views/noAutorizado_view.php');
+        }else{
+            $id = explode('/', $ruta)[2];
+            $receta = Receta::getInstancia();
+            $receta->delete($id);
+            header('Location: http://comidasaludable.localhost/');
+        }
+    }
 
     public function searchAction()
     {

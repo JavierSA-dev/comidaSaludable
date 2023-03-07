@@ -36,15 +36,15 @@ $router->add(array(
 ));
 
 $router->add(array(
-    'name' => 'editSuperheroe',
+    'name' => 'editReceta',
     'path' => '/edit\/[0-9]*$/',
-    'action' => [RecetasController::class, 'editSuperheroeAction']
+    'action' => [RecetasController::class, 'editRecetaAction']
 ));
 
 $router->add(array(
-    'name' => 'deleteSuperheroe',
+    'name' => 'deleteReceta',
     'path' => '/delete\/[0-9]*$/',
-    'action' => [RecetasController::class, 'deleteSuperheroeAction']
+    'action' => [RecetasController::class, 'deleteRecetaAction']
 ));
 
 $router->add(array(
