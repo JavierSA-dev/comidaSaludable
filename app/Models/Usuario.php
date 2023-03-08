@@ -140,5 +140,27 @@ class Usuario extends DBAbstractModel{
         return $this->rows;
     }
     
+    // getTiempoInactividad
+    public function getTiempoInactividad(){
+        $this->query = "SELECT tiempoinactividad FROM config WHERE id = 1";
+        $this->get_results_from_query();
+        return $this->rows;
+    }
+
+    // getByIdReceta
+    public function getByIdReceta($idReceta){
+        $this->query = "SELECT * FROM usuarios WHERE id IN (SELECT idColaborador FROM recetas WHERE id = :idReceta)";
+        $this->parametros['idReceta'] = $idReceta;
+        $this->get_results_from_query();
+        return $this->rows;
+    }
+
+    // getSaldoByIdUser
+    public function getSaldoByIdUser($idUsuario){
+        $this->query = "SELECT saldo FROM colaboradores WHERE idusuario = :idUsuario";
+        $this->parametros['idUsuario'] = $idUsuario;
+        $this->get_results_from_query();
+        return $this->rows;
+    }
 
 }

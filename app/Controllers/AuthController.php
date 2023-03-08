@@ -46,6 +46,11 @@ class AuthController extends BaseController
         header('Location: http://comidasaludable.localhost/');
     }
 
+    public static function getTiempoInactividadAction(){
+        $user = Usuario::getInstancia();
+        $tiempo = $user->getTiempoInactividad();
+        return $tiempo;
+    }
 
 }
 ?>

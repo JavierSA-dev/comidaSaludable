@@ -12,15 +12,20 @@ class RecetasController extends BaseController
     {
         if (isset($_POST['auth'])) {
             AuthController::login($_POST);
-        }else{
+        }else if(isset($_POST['votar'])){
             $receta = Receta::getInstancia();
-            $usuario = Usuario::getInstancia();
+            $receta->votar($_POST['idReceta'], $_POST["puntuacion"], $_SESSION['id']);
+            header("Location: http://comidasaludable.localhost/");
+        }
+        else if (isset($_POST['favorito'])) {
+            $receta = Receta::getInstancia();
+            $receta->favorito($_POST['idReceta'], $_SESSION['id']);
+            header("Location: http://comidasaludable.localhost/");
+        }
+        else{
+            $receta = Receta::getInstancia();
             $receta->getAll();
             $data = array('recetas' => $receta->getRows());
-            // foreach ($data['recetas'] as $receta) {
-            //     $data['recetas']['usuario'] =$usuario->getUserByIdColaborador($receta['idColaborador']);
-            // }
-            // print_r($data);
             $this->renderHTML('../views/index_view.php', $data);
         }
     }
@@ -78,6 +83,45 @@ class RecetasController extends BaseController
             }
         }
 
+    }
+
+    // generardocumentoAction
+    public function generardocumentoAction($ruta)
+    {
+        $idReceta = explode('/', $ruta)[2];
+        $usuario = Usuario::getInstancia();
+        $receta = Receta::getInstancia();
+        $userObj = $usuario->getByIdReceta($idReceta)[0];
+        $colaborador = $userObj['nombre'];
+        $importe = $usuario->getSaldoByIdUser($userObj['id'])[0]['saldo'];
+        $nrecetas = count($receta->getIdMisRecetasByIdColaborador($userObj['id']));
+
+        $fecha = date("d-m-Y");
+        // genera el documento en un directorio llamado pago(fecha) con los datos de la receta
+        $fh = fopen("pago".date("d-m-Y").".txt", 'w');
+        $texto = <<<_END
+        Cocina saludable
+        Documento de pago
+        Colaborador: {$colaborador}
+        Importe: {$importe}
+        Concepto: Colaboracion en nuestra revista digital con un total de {$nrecetas} recetas
+            
+            En Cordoba, a {$fecha}
+        _END;
+        fwrite($fh, $texto);
+        fclose($fh);
+
+        // comprimir fichero a zip
+        $zip = new \ZipArchive();
+        $zip->open('pago'.date("d-m-Y").'.zip', \ZipArchive::CREATE);
+        $zip->addFile('pago'.date("d-m-Y").'.txt');
+        $zip->close();
+        
+
+        $filename = "pago".date("d-m-Y").".txt";
+        $data = array('filename' => $filename);
+        $this->renderHTML('../views/generardocumento_view.php', $data);
+        
     }
 
     public function editRecetaAction($ruta)
@@ -173,5 +217,13 @@ class RecetasController extends BaseController
         }else{
             header('Location: http://comidasaludable.localhost/');
         }
+    }
+
+    public function favoritoAction(){
+        $receta = Receta::getInstancia();
+        $receta->getAllFavoritosByIdUsuario($_SESSION['id']);
+        $data = array('recetas' => $receta->getRows());
+        $data['favoritos'] = true;
+        $this->renderHTML('../views/index_view.php', $data);
     }
 }

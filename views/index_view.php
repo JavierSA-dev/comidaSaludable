@@ -34,7 +34,13 @@
 
             if ($_SESSION['auth'] !== "guest" && $_SESSION['estado'] == "Activo") {
                 echo "<a href='http://comidasaludable.localhost/logout'>Cerrar Sesión</a>";
+                echo "<br>";
+                echo "<a href='http://comidasaludable.localhost/favoritos'>Favoritos</a>";
             }
+            if (isset($data['favoritos'])) {
+                echo '<a href=\'http://comidasaludable.localhost/\'> &nbsp; Volver</a>';
+            }
+
             if ($_SESSION['auth'] == "Collaborator" && $_SESSION['estado'] == "Activo") {
                 echo "<br>";
                 echo "<a href='http://comidasaludable.localhost/add'>Añadir Receta</a>";
@@ -46,11 +52,14 @@
             echo "<th>Elaboración</th>";
             echo "<th>Etiquetas</th>";
             echo "<th>Imagen</th>";
+            if ($_SESSION['auth'] == "Collaborator" && $_SESSION["estado"] == "Activo") {
+                echo "<th>Visible</th>";
+                echo "<th>Editar</th>";
+                echo "<th>Eliminar</th>";
+            }
             echo "</tr>";
             foreach($data['recetas'] as $receta){
                 if ($receta['publica'] == 1 || $receta['idColaborador'] == $_SESSION['id']) {
-
-
                     echo "<tr>";
                     echo "<td>" . $receta['titulo'] . "</td>";
                     echo "<td>" . $receta['ingredientes'] . "</td>";
@@ -59,22 +68,23 @@
                     echo "<td><img width='200'  src='uploads/" . $receta['imagen'] . "'/></td>";
                     // print_r("User:" . $_SESSION['id']);
                     // print_r("Receta: ". $receta['idColaborador']);
-                        if ($_SESSION['auth'] == "Collaborator" && $receta['idColaborador'] == $_SESSION['id'] && $_SESSION["estado"] == "Activo") {
+                    if ($_SESSION['auth'] == "Admin" && $_SESSION['estado'] == "Activo") {
+                        echo "<td>";
+                        echo "<a href='http://comidasaludable.localhost/generardocumento/" . $receta['id'] . "'>Generar Documento</a>";
+                        echo "</td>";
+                    }
+                    if ($_SESSION['auth'] == "Collaborator" && $receta['idColaborador'] == $_SESSION['id'] && $_SESSION["estado"] == "Activo") {
+                        echo "<td>". $receta["publica"] ."</td>";
                         echo "<td><a href='http://comidasaludable.localhost/edit/" . $receta['id'] . "'>Editar</a></td>";
                         echo "<td><a href='http://comidasaludable.localhost/delete/" . $receta['id'] . "'>Eliminar</a></td>";
                     }
                     if ($_SESSION['auth'] !== "guest" && $_SESSION["estado"] == "Activo") {
-                        echo "<td>";
-                        echo "<select name='puntuacion' id='puntuacion'>";
-                        echo "<option value='1'>1</option>";
-                        echo "<option value='2'>2</option>";
-                        echo "<option value='3'>3</option>";
-                        echo "<option value='4'>4</option>";
-                        echo "<option value='5'>5</option>";
-                        echo "</select>";
-                        echo "</td>";
                         ?>
                         <td>
+                            <form action="" method="post">
+                                <input type="hidden" name="idReceta" value="<?php echo $receta['id'] ?>">
+                                <input type="submit" value="Añadir a favorito" name="favorito">
+                            </form>
                             <form action="" method="post">
                                 <select name="puntuacion" id="puntuacion">
                                     <option value="1">1</option>
@@ -83,7 +93,8 @@
                                     <option value="4">4</option>
                                     <option value="5">5</option>
                                 </select>
-                                <input type="submit" value="votar">
+                                <input type="hidden" name="idReceta" value="<?php echo $receta['id'] ?>">
+                                <input type="submit" value="votar" name="votar">
                             </form>
                         </td>
                         

@@ -156,10 +156,16 @@ class Receta extends DBAbstractModel{
         return $this->rows;
     }
 
-    // getById
+    public function votar($idReceta, $puntuacion, $idColaborador){
+        $this->query = "INSERT INTO r_usuarios_recetas_votacion (usuarios_id, recetas_id, puntuacion) VALUES (:idColaborador, :idReceta, :puntuacion)";
+        $this->parametros['idReceta'] = $idReceta;
+        $this->parametros['puntuacion'] = $puntuacion;
+        $this->parametros['idColaborador'] = $idColaborador;
+        $this->get_results_from_query();
+        $this->mensaje = 'Votación realizada exitosamente';
+    }
+
     public function getById($id = ''){
-        echo $id;
-        echo "ajsdkñ";
         $this->query = "SELECT * FROM recetas WHERE id = :id";
         $this->parametros['id'] = $id;
         $this->get_results_from_query();
@@ -169,6 +175,23 @@ class Receta extends DBAbstractModel{
     // getIdMisRecetasByIdColaborador
     public function getIdMisRecetasByIdColaborador($idColaborador){
         $this->query = "SELECT id FROM recetas WHERE idColaborador = :idColaborador";
+        $this->parametros['idColaborador'] = $idColaborador;
+        $this->get_results_from_query();
+        return $this->rows;
+    }
+
+    // favorito 
+    public function favorito($idReceta, $idColaborador){
+        $this->query = "INSERT INTO r_usuarios_recetas_favoritas (usuarios_id, recetas_id) VALUES (:idColaborador, :idReceta)";
+        $this->parametros['idReceta'] = $idReceta;
+        $this->parametros['idColaborador'] = $idColaborador;
+        $this->get_results_from_query();
+        $this->mensaje = 'Receta agregada a favoritos exitosamente';
+    }
+
+    // getAllFavoritosByIdUsuario
+    public function getAllFavoritosByIdUsuario($idColaborador){
+        $this->query = "SELECT * FROM recetas WHERE id IN (SELECT recetas_id FROM r_usuarios_recetas_favoritas WHERE usuarios_id = :idColaborador)";
         $this->parametros['idColaborador'] = $idColaborador;
         $this->get_results_from_query();
         return $this->rows;
