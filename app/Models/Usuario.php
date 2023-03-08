@@ -130,6 +130,7 @@ class Usuario extends DBAbstractModel{
         $this->get_results_from_query();
         return $this->rows;
     }
+
     
     // isActivoByIdUser
     public function isActivoByIdUser($idUsuario = ''){

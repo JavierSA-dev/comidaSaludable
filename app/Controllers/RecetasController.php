@@ -34,8 +34,6 @@ class RecetasController extends BaseController
             $this->renderHTML('../views/noAutorizado_view.php');
         }else{
             if (isset($_POST['send'])) {
-                print_r($_FILES['imagen']);
-                print_r($_POST);
 
 
                 $target_dir = "uploads/";
@@ -89,9 +87,19 @@ class RecetasController extends BaseController
             $_SESSION['estado'] = "Bloqueado";
             $this->renderHTML('../views/noAutorizado_view.php');
         }else{
-            $id = explode('/', $ruta)[2];
+            $idReceta = explode('/', $ruta)[2];
             $receta = Receta::getInstancia();
-            $receta->getById($id);
+            $misrecetas = $receta->getIdMisRecetasByIdColaborador($_SESSION['id']);
+            $existe = false;
+            foreach ($misrecetas as $recetaa) {
+                if ($recetaa['id'] == $idReceta) {
+                    $existe = true;
+                }
+            }
+            if (!$existe) {
+                header('Location: http://comidasaludable.localhost/');
+            }
+            $receta->getById($idReceta);
             $data = array('receta' => $receta->getRows()[0]);
             if (isset($_POST['send'])) {
                 $target_dir = "uploads/";
@@ -117,7 +125,7 @@ class RecetasController extends BaseController
                     }
                     $receta->setImagen($_FILES['imagen']['name']);
                 }else{
-                    $receta->getById($id);
+                    $receta->getById($idReceta);
                     $data = array('receta' => $receta->getRows()[0]);
                     $receta->setImagen($data['receta']['imagen']);
                 }
@@ -132,7 +140,7 @@ class RecetasController extends BaseController
                     $receta->setPublica(0);
                 }
                 $receta->setIdColaborador($_SESSION['id']);
-                $receta->edit($id);
+                $receta->edit($idReceta);
                 header('Location: http://comidasaludable.localhost/');
             } else {
                 $this->renderHTML('../views/editReceta_view.php', $data);

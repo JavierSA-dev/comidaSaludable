@@ -17,8 +17,22 @@ class AuthController extends BaseController
                 $_SESSION['error'] = 'Usuario bloqueado';
                 header('Location: http://comidasaludable.localhost/');
             }else{
-                $_SESSION['auth'] = $user->getPerfilByIdUser($_SESSION['id'])[0]['Perfiles_perfil'];
-                header('Location: http://comidasaludable.localhost/');
+                $perfiles = $user->getPerfilByIdUser($_SESSION['id']);
+                echo "<br>";
+                $existe = false;
+                foreach ($perfiles as $key => $value) {
+                    if ($value['Perfiles_perfil'] == $_POST["perfil"]) {
+                        $existe = true;
+                    }
+                }
+                if ($existe) {
+                    $_SESSION['auth'] = $_POST["perfil"];
+                    print_r($_SESSION['auth']);
+                    header('Location: http://comidasaludable.localhost/');
+                }else{
+                    $_SESSION['error'] = 'No tiene permisos para acceder a este perfil';
+                    header('Location: http://comidasaludable.localhost/');
+                }
             }
         }else{
             $_SESSION['error'] = 'Usuario o contraseña incorrectos';

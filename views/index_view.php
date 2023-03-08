@@ -59,11 +59,11 @@
                     echo "<td><img width='200'  src='uploads/" . $receta['imagen'] . "'/></td>";
                     // print_r("User:" . $_SESSION['id']);
                     // print_r("Receta: ". $receta['idColaborador']);
-                    if ($_SESSION['auth'] == "Collaborator" && $receta['idColaborador'] == $_SESSION['id'] && $_SESSION["estado"] == "Activo") {
+                        if ($_SESSION['auth'] == "Collaborator" && $receta['idColaborador'] == $_SESSION['id'] && $_SESSION["estado"] == "Activo") {
                         echo "<td><a href='http://comidasaludable.localhost/edit/" . $receta['id'] . "'>Editar</a></td>";
                         echo "<td><a href='http://comidasaludable.localhost/delete/" . $receta['id'] . "'>Eliminar</a></td>";
                     }
-                    if ($_SESSION['auth'] == "User" && $_SESSION["estado"] == "Activo") {
+                    if ($_SESSION['auth'] !== "guest" && $_SESSION["estado"] == "Activo") {
                         echo "<td>";
                         echo "<select name='puntuacion' id='puntuacion'>";
                         echo "<option value='1'>1</option>";
@@ -73,6 +73,21 @@
                         echo "<option value='5'>5</option>";
                         echo "</select>";
                         echo "</td>";
+                        ?>
+                        <td>
+                            <form action="" method="post">
+                                <select name="puntuacion" id="puntuacion">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <input type="submit" value="votar">
+                            </form>
+                        </td>
+                        
+                        <?php
                     }
                     echo "</tr>";
                     

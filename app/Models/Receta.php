@@ -157,9 +157,19 @@ class Receta extends DBAbstractModel{
     }
 
     // getById
-    public function getById($id){
+    public function getById($id = ''){
+        echo $id;
+        echo "ajsdkñ";
         $this->query = "SELECT * FROM recetas WHERE id = :id";
         $this->parametros['id'] = $id;
+        $this->get_results_from_query();
+        return $this->rows;
+    }
+
+    // getIdMisRecetasByIdColaborador
+    public function getIdMisRecetasByIdColaborador($idColaborador){
+        $this->query = "SELECT id FROM recetas WHERE idColaborador = :idColaborador";
+        $this->parametros['idColaborador'] = $idColaborador;
         $this->get_results_from_query();
         return $this->rows;
     }
